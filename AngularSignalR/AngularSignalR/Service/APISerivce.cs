@@ -1,5 +1,7 @@
 ﻿using AngularSignalR.DAL;
 using AngularSignalR.Models;
+using AngularSignalR.ServiceHub;
+using Microsoft.AspNet.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +23,17 @@ namespace AngularSignalR.Service
     public class APISerivce : IAPIService, IDisposable
     {
         private UnitOfWork db = new UnitOfWork();
+
+        // // Singleton instance
+        //private readonly static Lazy<APISerivce> _instance = new Lazy<APISerivce>(
+        //    () => new APISerivce(GlobalHost.ConnectionManager.GetHubContext<StoreHub>()));
+
+        //private IHubContext _context;
+
+        //private APISerivce(IHubContext context)
+        //{
+        //    _context = context;
+        //}
 
         public APISerivce()
         {
@@ -48,6 +61,12 @@ namespace AngularSignalR.Service
             try {
                 db.ProductRepository.Insert(product);
                 db.Save();
+
+                // HACK 
+                IHubContext _context =  GlobalHost.ConnectionManager.GetHubContext<StoreHub>();
+
+                _context.Clients.All.AddProduct(Newtonsoft.Json.JsonConvert.SerializeObject(product));
+                
                 return product;
             }
             catch (Exception ex)

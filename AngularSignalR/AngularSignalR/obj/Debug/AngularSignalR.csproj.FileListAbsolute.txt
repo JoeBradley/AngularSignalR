@@ -21,3 +21,4 @@ C:\Users\Chris\Documents\GitHub\AngularSignalR\AngularSignalR\AngularSignalR\obj
 C:\Users\Chris\Documents\GitHub\AngularSignalR\AngularSignalR\AngularSignalR\obj\Debug\AngularSignalR.csproj.GenerateResource.Cache
 C:\Users\Chris\Documents\GitHub\AngularSignalR\AngularSignalR\AngularSignalR\obj\Debug\AngularSignalR.dll
 C:\Users\Chris\Documents\GitHub\AngularSignalR\AngularSignalR\AngularSignalR\obj\Debug\AngularSignalR.pdb
+C:\Users\Chris\Documents\GitHub\AngularSignalR\AngularSignalR\AngularSignalR\obj\Debug\AngularSignalR.csprojResolveAssemblyReference.cache

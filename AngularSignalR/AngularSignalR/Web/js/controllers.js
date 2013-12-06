@@ -1,33 +1,58 @@
 ﻿'use strict';
 
 /* Controllers */
+//Communicating between controllers, see: http://stackoverflow.com/questions/11252780/whats-the-correct-way-to-communicate-between-controllers-in-angularjs/19498009#19498009
 
 var appControllers = angular.module('appControllers', []);
 
-appControllers.controller('ProductListCtrl', ['$scope', 'productService',
-  function ($scope, productService) {
-      $scope.products = productService.list();
+appControllers.controller('ProductListCtrl', ['$scope', 'productService', 'logService', 'hubService',
+    function ($scope, productService, logService, hubService) {
+        $scope.products = productService.list();
 
-      $scope.orderProp = 'Name';
+        $scope.orderProp = 'Name';
 
-      $scope.addLike = function (product) {
-          product.Likes++;
-          productService.update(product);
-      };
+        $scope.addLike = function (product) {
+            product.Likes++;
+            productService.update(product);
+            hubService.ping();
+        };
 
-      $scope.delete = function (product) {
-          productService.remove({ Id: product.Id }, function (success) {
-              if (success)
-                  $scope.products.splice($scope.products.indexOf(product), 1);
-          });
-      };
+        $scope.delete = function (product) {
+            productService.remove({ Id: product.Id }, function (success) {
+                if (success)
+                    $scope.products.splice($scope.products.indexOf(product), 1);
+            });
+        };
 
-  }]);
+        // Create a function that the hub can call to broadcast messages.
+        $scope.addProduct = function (product) {
+            try {
+                $scope.products.push(product);
+                $scope.$apply();
+            }
+            catch (ex) {
+                console.error(ex.message);
+            }
+        };
+
+        hubService.initialize();
+
+        $scope.$parent.$on('addProduct', function (e, product) {
+            console.log('ProductListCtrl.on.addProduct');
+            $scope.addProduct(product);
+        });
+
+        $scope.$parent.$on('ping', function (e, datetime) {
+                console.log('ProductListCtrl.on.ping');
+                console.log('ping: ' + datetime);
+            });
+
+    }]);
 
 appControllers.controller('ProductCtrl', ['$scope', '$routeParams', 'productService', '$location',
   function ($scope, $routeParams, productService, $location) {
       $scope.product = productService.select({ Id: $routeParams.Id });
-      
+
       $scope.setImage = function (imageUrl) {
           $scope.mainImageUrl = imageUrl;
       };
@@ -37,7 +62,9 @@ appControllers.controller('ProductCtrl', ['$scope', '$routeParams', 'productServ
       };
 
       $scope.save = function () {
-          
+
+          console.log('ProductCtrl.save');
+
           if ($scope.product.ImageUrl == undefined || $scope.product.ImageUrl == '')
               $scope.product.ImageUrl = flickr.getImage($scope.product.Name, 'Animal');
 
@@ -53,7 +80,7 @@ appControllers.controller('ProductCtrl', ['$scope', '$routeParams', 'productServ
               });
           }
       };
-      
+
       $scope.isSaveDisabled = function () {
           return $scope.ProductForm.$invalid || angular.equals($scope.product, $scope.form);
       };

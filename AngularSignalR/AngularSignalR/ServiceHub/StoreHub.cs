@@ -1,49 +1,24 @@
-﻿using Microsoft.AspNet.SignalR;
+﻿using AngularSignalR.Models;
+using Microsoft.AspNet.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Newtonsoft.Json.Converters;
 
 namespace AngularSignalR.ServiceHub
 {
     public class StoreHub : Hub
     {
-        public void Send(string name, string message)
+        public void AddProduct(Product product)
         {
-            ChatMessages.Messages.Add(new ChatMessage() { Name = name, Message = message });
-
             // Call the broadcastMessage method to update clients.
-            Clients.All.broadcastMessage(name, message);
+            Clients.Others.addProduct(Newtonsoft.Json.JsonConvert.SerializeObject(product));
         }
-        public void Join(string name)
+        public void Ping()
         {
-            ChatMembers.Members.Add(new ChatMember() { ConnectionId = Context.ConnectionId, Name = name });
-
-            foreach (ChatMessage msg in ChatMessages.Messages)
-            {
-                Clients.Caller.broadcastMessage(msg.Name, msg.Message);
-            }
-
-            String message = "has joined the conversation";
-            ChatMessages.Messages.Add(new ChatMessage() { Name = name, Message = message });
-
-            // Call the broadcastMessage method to update clients.
-            Clients.All.broadcastMessage(name, message);
-        }
-
-        public override Task OnDisconnected()
-        {
-            foreach (ChatMember m in ChatMembers.Members)
-            {
-                if (Context.ConnectionId == m.ConnectionId)
-                {
-                    String message = "has left the conversation";
-                    ChatMessages.Messages.Add(new ChatMessage() { Name = m.Name, Message = message });
-                    Send(m.Name, message);
-                }
-            }
-            return base.OnDisconnected();
+            Clients.Others.ping(DateTime.Now.ToString());
         }
     }
 }
