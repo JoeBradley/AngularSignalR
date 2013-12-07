@@ -419,6 +419,7 @@
     <Content Include="Web\js\lib\ignore\mustache.js" />
     <Content Include="Web\js\lib\ignore\underscore.js" />
     <Content Include="Web\js\lib\jquery\jquery-1.9.1.js" />
+    <Content Include="Web\js\lib\jquery\jquery-plugin-colourfulbox-0.0.1.js" />
     <Content Include="Web\js\lib\jquery\jquery-ui-1.10.3.custom.js" />
     <Content Include="Web\js\models.js" />
     <Content Include="Web\js\services.js" />

@@ -2,6 +2,10 @@
 var app = {
     version: '1.0.0',
     author: 'Christopher Cassidy',
+
+    //init: function() {
+    //    $('.well').colourfy().done(function() { console.log('colourfy done'); });
+    //},
 }
 
 /* App Module */
