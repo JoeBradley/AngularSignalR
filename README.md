@@ -9,4 +9,4 @@ Client side CRUD actions persisted to server through WCF.  Updates to models on 
 
 Client side models &amp; views handled by Angular, persisting changes using the RESTful web service by the server.
 
-SignalR.js intergrated into angular service to handles messages from server.
+SignalR.js intergrated into angular service to handle messages from server.
