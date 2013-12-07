@@ -11,7 +11,7 @@
             'method=' + method +
             '&api_key=' + this.apiKey +
             '&tags=' + encodeURI(name + ',' + category) +
-            '&tag_mode=all&sort=relevance&safe_search=1&content_type=1&per_page=1&page=1&format=json&nojsoncallback=1';
+            '&tag_mode=all&sort=relevance&safe_search=1&content_type=1&per_page=20&page=1&format=json&nojsoncallback=1';
 
         //console.log('Flickr Search: ' + url);
 
@@ -23,12 +23,14 @@
                 type: "GET"
             }).responseText;
 
-            console.log(json);
-            var photo = $.parseJSON(json).photos.photo[0];
+            //console.log(json);
+            var photos = $.parseJSON(json).photos;
+            var photo = photos.photo[parseInt(Math.random() * photos.photo.length)];
 
             return 'http://farm' + photo.farm + '.static.flickr.com/' + photo.server + '/' + photo.id + '_' + photo.secret + '_q.jpg';
         }
         catch (e) {
+            console.error(e.message);
             return '/web/images/products/missing-image.jpg';
         }
     },

@@ -25,59 +25,62 @@ appServices.factory('hubService', ['$rootScope',
 
         var initialize = function () {
 
-            var that = self;
             console.log('init hubService');
 
             // Declare a proxy to reference the hub. Defined in StoreHub.cs
-            that.proxy = $.connection.storeHub;
-
-            //$.connection.hub.start().done(function () {
-            //    console.log('hub proxy connected');
-
-            //    self.proxy.on('addProduct', function (product) {
-            //        console.log('hubService.on.addProduct');
-            //        $rootScope.$emit('addProduct', product);
-            //    });
-            //});
-
             // need to wrap this in .done( function() , but trouble with reference to this, see for help:
             // http://javascript.crockford.com/private.html
+            self.proxy = $.connection.storeHub;
+            
+            $.connection.hub.start().done(function () { });
 
-            $.connection.hub.start();
-            self.proxy.on('addProduct', function (product) {
-                console.log('hubService.on.addProduct');
+            // Calls FROM server
+            self.proxy.on('addProduct', function (json) {
+                var product = JSON.parse(json);
+                //console.log('hubService.on.addProduct:' + JSON.stringify(product));
                 $rootScope.$emit('addProduct', product);
             });
+            self.proxy.on('updateProduct', function (json) {
+                var product = JSON.parse(json);
+                //console.log('hubService.on.updateProduct:' + JSON.stringify(product));
+                $rootScope.$emit('updateProduct', product);
+            });
+            self.proxy.on('removeProduct', function (id) {
+                //console.log('hubService.on.removeProduct:' + id);
+                $rootScope.$emit('removeProduct', id);
+            });
+            self.proxy.on('lock', function (id) {
+                console.log('hubService.on.lock:' + id);
+                $rootScope.$emit('lock', id);
+            });
+            self.proxy.on('unlock', function (id) {
+                console.log('hubService.on.unlock:' + id);
+                $rootScope.$emit('unlock', id);
+            });
             self.proxy.on('ping', function (datetime) {
-                console.log('hubService.on.ping');
+                console.log('hubService.on.ping:' + datetime);
                 $rootScope.$emit('ping', datetime);
             });
+        };
 
-
-
-            ////Getting the connection object
-            //connection = $.hubConnection();
-
-            ////Creating proxy
-            //this.proxy = connection.createHubProxy('storeHub');
-
-            ////Starting connection
-            //connection.start();
-
-            ////Publishing an event when server pushes a new product
-            //this.proxy.on('addProduct', function (product) {
-            //    $rootScope.$emit('addProduct', product);
-            //});
+        // Calls TO server
+        // lock item for editing
+        var lock = function (id) {
+            self.proxy.invoke('lock', id);
+        };
+        // lock item for editing
+        var unlock = function (id) {
+            self.proxy.invoke('unlock', id);
         };
 
         var ping = function () {
-            //Invoking greetAll method defined in hub
             self.proxy.invoke('ping');
         };
 
         return {
             initialize: initialize,
-            ping: ping
+            ping: ping,
+            lock: lock
         };
     }
 ]);

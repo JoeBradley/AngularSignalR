@@ -11,37 +11,68 @@ appControllers.controller('ProductListCtrl', ['$scope', 'productService', 'logSe
 
         $scope.orderProp = 'Name';
 
+        // Client bound events
         $scope.addLike = function (product) {
             product.Likes++;
             productService.update(product);
-            hubService.ping();
         };
-
         $scope.delete = function (product) {
+            console.log('ProductListCtrl.delete');
             productService.remove({ Id: product.Id }, function (success) {
                 if (success)
                     $scope.products.splice($scope.products.indexOf(product), 1);
             });
         };
 
-        // Create a function that the hub can call to broadcast messages.
+        // Hub / Client called methods.
         $scope.addProduct = function (product) {
             try {
-                $scope.products.push(product);
-                $scope.$apply();
+                if ($.inArray(product, $scope.products) == -1) {
+                    $scope.$apply(function () { $scope.products.push(product); });
+                }
             }
             catch (ex) {
                 console.error(ex.message);
             }
         };
+        
+        $scope.updateProduct = function (product) {
+            $.each($scope.products, function (index) {
+                if (this.Id == product.Id) {
+                    $scope.$apply(function () { $scope.products[index] = product; });
+                }
+            });
+        };
+        
+        // removes from local collection, not from server
+        $scope.removeProduct = function (id) {
+            var indx = -1;
+            $.each($scope.products, function (index) { 
+                if (this.Id == id)  indx = index;
+            });
+            if (indx > -1) {
+                $scope.$apply(function () {
+                    $scope.products.splice(indx, 1);    
+                });
+            }
+        };
 
+        // Init hub eservice and bind event listeners
         hubService.initialize();
 
+        // Hub bound events
         $scope.$parent.$on('addProduct', function (e, product) {
             console.log('ProductListCtrl.on.addProduct');
             $scope.addProduct(product);
         });
-
+        $scope.$parent.$on('updateProduct', function (e, product) {
+            console.log('ProductListCtrl.on.updateProduct');
+            $scope.updateProduct(product);
+        });
+        $scope.$parent.$on('removeProduct', function (e, id) {
+            console.log('ProductListCtrl.on.removeProduct');
+            $scope.removeProduct(id); 
+        });
         $scope.$parent.$on('ping', function (e, datetime) {
                 console.log('ProductListCtrl.on.ping');
                 console.log('ping: ' + datetime);

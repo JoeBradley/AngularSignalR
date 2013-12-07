@@ -26,7 +26,8 @@
     </div>
     <br />
     <div class="row products">
-        <div class="col-sm-6 col-md-3 thumb-view-item" ng-repeat="product in products | filter:query | orderBy:orderProp">
+        <!--  -->
+        <div class="col-sm-6 col-md-3 thumb-view-item" ng-repeat="product in products | filter:query | orderBy:orderProp track by product.Id">
             <div class="thumbnail">
                 <div style="overflow: hidden; margin-bottom: 2px;">
                     <div class="pull-right"><a style="cursor: pointer" class="btn btn-primary btn-xs like" ng-click="addLike(product)"><span class="glyphicon glyphicon-thumbs-up"></span>Like</a></div>

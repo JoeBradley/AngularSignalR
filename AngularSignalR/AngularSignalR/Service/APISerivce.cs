@@ -64,7 +64,6 @@ namespace AngularSignalR.Service
 
                 // HACK 
                 IHubContext _context =  GlobalHost.ConnectionManager.GetHubContext<StoreHub>();
-
                 _context.Clients.All.AddProduct(Newtonsoft.Json.JsonConvert.SerializeObject(product));
                 
                 return product;
@@ -74,17 +73,17 @@ namespace AngularSignalR.Service
                 return null;
             }
         }
-        public Boolean UpdateProduct(string ProductId, Product updatedProduct)
+        public Boolean UpdateProduct(string ProductId, Product product)
         {
             try
             {
-                db.ProductRepository.Update(updatedProduct);
-                //Product p = db.ProductRepository.GetByID(int.Parse(ProductId));
-                //p.Likes = updatedProduct.Likes;
-                //p.Name = updatedProduct.Name;
-                //p.Price = updatedProduct.Price;
-                //db.ProductRepository.Update(p);
+                db.ProductRepository.Update(product);                
                 db.Save();
+
+                // HACK 
+                IHubContext _context = GlobalHost.ConnectionManager.GetHubContext<StoreHub>();
+                _context.Clients.All.UpdateProduct(Newtonsoft.Json.JsonConvert.SerializeObject(product));
+                
                 return true;
             }
             catch (Exception ex)
@@ -96,6 +95,11 @@ namespace AngularSignalR.Service
         {
             db.ProductRepository.Delete(int.Parse(ProductId));
             db.Save();
+
+            // HACK 
+            IHubContext _context = GlobalHost.ConnectionManager.GetHubContext<StoreHub>();
+            _context.Clients.All.RemoveProduct(ProductId);
+                
             return true;
         }
 
