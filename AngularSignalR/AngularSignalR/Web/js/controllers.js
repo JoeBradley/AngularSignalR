@@ -19,8 +19,8 @@ appControllers.controller('ProductListCtrl', ['$scope', 'productService', 'logSe
         $scope.delete = function (product) {
             console.log('ProductListCtrl.delete');
             productService.remove({ Id: product.Id }, function (success) {
-                if (success)
-                    $scope.products.splice($scope.products.indexOf(product), 1);
+                //if (success)
+                //    $scope.products.splice($scope.products.indexOf(product), 1);
             });
         };
 
@@ -51,6 +51,7 @@ appControllers.controller('ProductListCtrl', ['$scope', 'productService', 'logSe
                 if (this.Id == id)  indx = index;
             });
             if (indx > -1) {
+                console.log("remove product");
                 $scope.$apply(function () {
                     $scope.products.splice(indx, 1);    
                 });
